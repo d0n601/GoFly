@@ -6,6 +6,8 @@ short human-readable report. It can show the latest
 `--forecast`, an hourly model forecast from
 [Open-Meteo](https://open-meteo.com) for a moment in time.
 
+⚠️**Obviously:** ATIS/AWOS is part of your checklist, do not trust this as a source of truth, just supplemental!
+
 Use for automations to message you current/forcast conditions for flights:
 
 ```console
@@ -28,6 +30,11 @@ Wind 256° 03kt G3 | Vis 15+ SM | Sky CLR | 14.1°C/8.3°C | Altimeter 29.98 inH
 Forecast: 2026-09-16 08:00 PDT (15:00 UTC)
 Wind 274° 02kt G4 | Vis 15+ SM | Sky CLR | 15.8°C/7.5°C | Altimeter 30.00 inHg
 ```
+
+🤖 Most usefully, local AI agents can non-deterministically gather weather for you.
+<img width="2188" height="1233" alt="Screenshot From 2026-09-09 17-21-39" src="https://github.com/user-attachments/assets/a935c83f-e309-455c-bdd8-06eb1c8b6d00" />
+
+
 
 ## ✨ Features
 
