@@ -127,6 +127,22 @@ func TestRunCurrent(t *testing.T) {
 	}
 }
 
+func TestRunCurrentVariableWind(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		io.WriteString(w, `[{"icaoId":"KGOO","name":"Grass Valley/Nevada Cnty, CA, US","obsTime":`+fmt.Sprint(unixAt(20, 15))+`,"temp":32,"dewp":6,"wdir":"VRB","wspd":5,"visib":"10+","altim":1021.1,"rawOb":"METAR KGOO 100015Z AUTO VRB05KT 10SM CLR 32/06 A3015 RMK A01","lat":39.224,"lon":-121.003,"elev":950}]`)
+	}))
+	t.Cleanup(srv.Close)
+
+	out := &strings.Builder{}
+	a := appWith(srv.URL, out)
+	if err := a.Run(context.Background(), []string{"KGOO"}); err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+	if !strings.Contains(out.String(), "Wind VRB 5kt") {
+		t.Fatalf("output missing VRB wind:\n%s", out.String())
+	}
+}
+
 func TestRunWithTimePicksClosest(t *testing.T) {
 	fixture := []fixtureObs{
 		{IcaoID: "KEDU", ObsTime: unixAt(19, 20), RawOb: "METAR KEDU later"},

@@ -2,6 +2,7 @@ package render
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -9,6 +10,17 @@ import (
 )
 
 const hpaPerInHg = 3.386389
+
+func windDir(dir api.WindDir) string {
+	s := string(dir)
+	if d, err := strconv.ParseFloat(s, 64); err == nil {
+		return fmt.Sprintf("%03.0f°", d)
+	}
+	if s != "" {
+		return s
+	}
+	return "000°"
+}
 
 func Render(m api.Metar, local *time.Location) string {
 	var b strings.Builder
@@ -23,7 +35,7 @@ func Render(m api.Metar, local *time.Location) string {
 	obs := time.Unix(m.ObsTime, 0)
 	fmt.Fprintf(&b, "Observed: %s (%s UTC)\n", obs.In(local).Format("2006-01-02 15:04 MST"), obs.UTC().Format("15:04"))
 
-	parts := []string{fmt.Sprintf("Wind %03.0f° %dkt", m.Wdir, int(m.Wspd))}
+	parts := []string{fmt.Sprintf("Wind %s %dkt", windDir(m.Wdir), int(m.Wspd))}
 	if m.Visib != "" {
 		parts = append(parts, "Vis "+string(m.Visib))
 	}

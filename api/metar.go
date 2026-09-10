@@ -25,6 +25,27 @@ func (v *Visib) UnmarshalJSON(data []byte) error {
 	return fmt.Errorf("unsupported visib value %s", data)
 }
 
+// WindDir holds a METAR wind direction: either a number (e.g. 360) or the
+// string "VRB" when the wind is variable.
+type WindDir string
+
+func (w *WindDir) UnmarshalJSON(data []byte) error {
+	if len(data) == 0 || string(data) == "null" {
+		return nil
+	}
+	var s string
+	if err := json.Unmarshal(data, &s); err == nil {
+		*w = WindDir(s)
+		return nil
+	}
+	var n json.Number
+	if err := json.Unmarshal(data, &n); err == nil {
+		*w = WindDir(n.String())
+		return nil
+	}
+	return fmt.Errorf("unsupported wdir value %s", data)
+}
+
 type Metar struct {
 	IcaoID      string  `json:"icaoId"`
 	Name        string  `json:"name"`
@@ -33,7 +54,7 @@ type Metar struct {
 	ReceiptTime string  `json:"receiptTime"`
 	Temp        float64 `json:"temp"`
 	Dewp        float64 `json:"dewp"`
-	Wdir        float64 `json:"wdir"`
+	Wdir        WindDir `json:"wdir"`
 	Wspd        float64 `json:"wspd"`
 	Visib       Visib   `json:"visib"`
 	Altim       float64 `json:"altim"`

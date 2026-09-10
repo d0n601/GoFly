@@ -54,7 +54,7 @@ func TestGetMetarsCurrent(t *testing.T) {
 	}
 	m := metars[0]
 	if m.IcaoID != "KEDU" || m.Name != "Davis/University Arpt, CA, US" ||
-		m.Temp != 34 || m.Dewp != 5 || m.Wdir != 20 || m.Wspd != 7 ||
+		m.Temp != 34 || m.Dewp != 5 || m.Wdir != "20" || m.Wspd != 7 ||
 		m.Visib != "10+" || m.Altim != 1017 ||
 		m.RawOb != "METAR KEDU 091955Z AUTO 02007KT 10SM 34/05 A3003 RMK AO1" ||
 		m.ObsTime != 1788983700 {
@@ -87,6 +87,20 @@ func TestGetMetarsNumericVisib(t *testing.T) {
 	}
 	if metars[0].Visib != "10" {
 		t.Fatalf("visib = %q, want %q", metars[0].Visib, "10")
+	}
+}
+
+func TestGetMetarsVariableWind(t *testing.T) {
+	srv := newServer(t, http.StatusOK, `[{"icaoId":"KGOO","obsTime":1788999300,"wdir":"VRB","wspd":5,"rawOb":"METAR KGOO"}]`, nil)
+	c := NewClient(srv.Client())
+	c.BaseURL = srv.URL
+
+	metars, err := c.GetMetars(context.Background(), "KGOO", false)
+	if err != nil {
+		t.Fatalf("GetMetars: %v", err)
+	}
+	if metars[0].Wdir != "VRB" {
+		t.Fatalf("wdir = %q, want %q", metars[0].Wdir, "VRB")
 	}
 }
 

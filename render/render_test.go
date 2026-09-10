@@ -19,7 +19,7 @@ func TestRenderFull(t *testing.T) {
 		ObsTime: time.Date(2026, 9, 9, 19, 55, 0, 0, time.UTC).Unix(),
 		Temp:    34,
 		Dewp:    5,
-		Wdir:    20,
+		Wdir:    "20",
 		Wspd:    7,
 		Visib:   "10+",
 		Altim:   1017,
@@ -41,7 +41,7 @@ func TestRenderStandardTime(t *testing.T) {
 		ObsTime: time.Date(2026, 1, 15, 19, 55, 0, 0, time.UTC).Unix(),
 		Temp:    -2,
 		Dewp:    -5,
-		Wdir:    0,
+		Wdir:    "0",
 		Wspd:    0,
 		Visib:   "1/4",
 		Altim:   1013,
@@ -52,6 +52,28 @@ func TestRenderStandardTime(t *testing.T) {
 		"Observed: 2026-01-15 11:55 PST (19:55 UTC)\n" +
 		"Wind 000° 0kt | Vis 1/4 | -2°C/-5°C | Altimeter 29.91 inHg\n" +
 		"METAR KEDU 151955Z 00000KT 1/4SM 02/M05 A2992"
+	if got != want {
+		t.Fatalf("Render:\n got: %q\nwant: %q", got, want)
+	}
+}
+
+func TestRenderVariableWind(t *testing.T) {
+	m := api.Metar{
+		IcaoID:  "KGOO",
+		ObsTime: time.Date(2026, 9, 10, 0, 15, 0, 0, time.UTC).Unix(),
+		Temp:    32,
+		Dewp:    6,
+		Wdir:    "VRB",
+		Wspd:    5,
+		Visib:   "10+",
+		Altim:   1021.1,
+		RawOb:   "METAR KGOO 100015Z AUTO VRB05KT 10SM CLR 32/06 A3015 RMK A01",
+	}
+	got := Render(m, pdt)
+	want := "KGOO\n" +
+		"Observed: 2026-09-09 17:15 PDT (00:15 UTC)\n" +
+		"Wind VRB 5kt | Vis 10+ | 32°C/6°C | Altimeter 30.15 inHg\n" +
+		"METAR KGOO 100015Z AUTO VRB05KT 10SM CLR 32/06 A3015 RMK A01"
 	if got != want {
 		t.Fatalf("Render:\n got: %q\nwant: %q", got, want)
 	}
